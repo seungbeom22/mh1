@@ -1,123 +1,131 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize); resize();
+canvas.width = 800; canvas.height = 400;
 
-// 데이터 영구 저장 (localStorage)
+// [보완] 코인 저장 로직을 더 확실하게 관리
 let bestScore = parseInt(localStorage.getItem("bestScoreCat")) || 0;
 let coins = parseInt(localStorage.getItem("coinsCat")) || 0;
-let armorType = localStorage.getItem("armorCat") || "normal"; // 영구 방어구
+let armorType = localStorage.getItem("armorCat") || "normal";
 let legendCount = parseInt(localStorage.getItem("legendCount")) || 0;
 
 let score = 0;
-let lives = 3.0; // 방어구를 위해 실수형으로 관리
+let lives = 3.0;
 let isGameOver = false;
 let gameSpeed = 5;
 let obstacles = [];
 let spawnTimer = 0;
 
-// 버프/디버프 상태
+// 효과 지속 관리용 변수
+let isInvincible = false;
 let scoreMultiplier = 1;
 let coinMultiplier = 1;
 let isScoreStopped = false;
+let activeTimeouts = []; // 현재 실행 중인 모든 효과 시간 관리
 
-let player = { x: 50, y: canvas.height - 100, width: 60, height: 60, dy: 0, gravity: 0.8, jumpPower: 18, isJumping: false };
+const saveAllData = () => {
+    localStorage.setItem("coinsCat", coins);
+    localStorage.setItem("bestScoreCat", bestScore);
+    localStorage.setItem("armorCat", armorType);
+    localStorage.setItem("legendCount", legendCount);
+};
 
 const updateUI = () => {
     document.getElementById("heart-display").innerText = "❤️".repeat(Math.ceil(lives));
     document.getElementById("coin-display").innerText = "🪙 " + coins;
     document.getElementById("score-display").innerText = "Score: " + score;
     document.getElementById("best-display").innerText = "Best: " + bestScore;
-    
-    let armorName = { "normal": "🛡️ 기본", "rare": "💎 레어", "epic": "🔮 에픽", "legend": `👑 전설(${legendCount})` };
-    document.getElementById("armor-status").innerText = armorName[armorType];
-
-    localStorage.setItem("coinsCat", coins);
-    localStorage.setItem("armorCat", armorType);
-    localStorage.setItem("legendCount", legendCount);
+    saveAllData(); // UI 업데이트할 때마다 저장
 };
 
-const showMsg = (txt) => {
-    const box = document.getElementById("msg-box");
-    box.innerText = txt;
-    setTimeout(() => { box.innerText = ""; }, 2000);
-};
-
-// 도박 포션 로직
-function applyGamble() {
-    const effects = [
-        { msg: "🔴 디버프: 속도 증가!", action: () => { gameSpeed += 3; setTimeout(() => gameSpeed -= 3, 20000); } },
-        { msg: "🔴 디버프: 코인 획득 불가!", action: () => { coinMultiplier = 0; setTimeout(() => coinMultiplier = 1, 10000); } },
-        { msg: "🔴 디버프: 기록 중단!", action: () => { isScoreStopped = true; setTimeout(() => isScoreStopped = false, 5000); } },
-        { msg: "🔵 버프: 기록 2배!", action: () => { scoreMultiplier = 2; setTimeout(() => scoreMultiplier = 1, 15000); } },
-        { msg: "🔵 버프: 속도 감소!", action: () => { gameSpeed = 3; setTimeout(() => gameSpeed = 5, 20000); } },
-        { msg: "🔵 버프: 코인 2배!", action: () => { coinMultiplier = 2; setTimeout(() => coinMultiplier = 1, 15000); } }
-    ];
-    const rand = effects[Math.floor(Math.random() * effects.length)];
-    rand.action();
-    showMsg(rand.msg);
+// [추가] 모든 버프/디버프 강제 종료 함수
+function clearAllEffects() {
+    activeTimeouts.forEach(t => clearTimeout(t));
+    activeTimeouts = [];
+    isInvincible = false;
+    scoreMultiplier = 1;
+    coinMultiplier = 1;
+    isScoreStopped = false;
+    gameSpeed = 5; // 속도 초기화
 }
 
-window.buyItem = function(item, price) {
-    if (coins >= price) {
-        coins -= price;
-        if (item === 'shield') { /* 3초 무적 로직 */ }
-        else if (item === 'life') lives++;
-        else if (item === 'gamble') applyGamble();
-        else if (item === 'rare' || item === 'epic' || item === 'legend') {
-            armorType = item;
-            if (item === 'legend') legendCount = 8;
-            showMsg(`${item} 방어구 구매 완료!`);
-        }
-        updateUI();
-        showMsg(`${price}코인 소실! 구매 완료`);
-    } else { alert("코인이 부족합니다!"); }
-};
+// 도박 포션 (확률 반반)
+function applyGamble() {
+    const isGood = Math.random() < 0.5; // 50% 확률
+    if (isGood) {
+        const effects = [
+            { msg: "🔵 버프: 기록 2배!", action: () => { scoreMultiplier = 2; return setTimeout(() => scoreMultiplier = 1, 15000); } },
+            { msg: "🔵 버프: 속도 감소!", action: () => { gameSpeed = 3; return setTimeout(() => gameSpeed = 5, 20000); } },
+            { msg: "🔵 버프: 코인 2배!", action: () => { coinMultiplier = 2; return setTimeout(() => coinMultiplier = 1, 15000); } }
+        ];
+        const rand = effects[Math.floor(Math.random() * effects.length)];
+        activeTimeouts.push(rand.action());
+        showMsg(rand.msg);
+    } else {
+        const effects = [
+            { msg: "🔴 디버프: 속도 증가!", action: () => { gameSpeed += 3; return setTimeout(() => gameSpeed -= 3, 20000); } },
+            { msg: "🔴 디버프: 코인 중단!", action: () => { coinMultiplier = 0; return setTimeout(() => coinMultiplier = 1, 10000); } },
+            { msg: "🔴 디버프: 기록 중단!", action: () => { isScoreStopped = true; return setTimeout(() => isScoreStopped = false, 5000); } }
+        ];
+        const rand = effects[Math.floor(Math.random() * effects.length)];
+        activeTimeouts.push(rand.action());
+        showMsg(rand.msg);
+    }
+}
+
+// 플레이어 초기 상태 (초반 점프 안 되는 문제 해결을 위해 y값 조정)
+let player = { x: 50, y: 290, width: 50, height: 50, dy: 0, gravity: 0.8, jumpPower: 16, isJumping: false };
 
 function handleJump() {
+    // [수정] 게임 시작 전이나 초기 상태에서도 점프가 즉시 먹히도록 조건 완화
     if (!player.isJumping && !isGameOver) {
         player.dy = -player.jumpPower;
         player.isJumping = true;
-    } else if (isGameOver) resetGame();
+    } else if (isGameOver) {
+        resetGame();
+    }
 }
 
-// 모바일: 화면 어디를 눌러도 점프 (상점 버튼 제외)
+// 터치 이벤트 (화면 하단 빈 공간 터치 포함 전체)
 window.addEventListener("touchstart", (e) => {
-    if (e.target.tagName !== "BUTTON") { e.preventDefault(); handleJump(); }
+    if (e.target.tagName !== "BUTTON") {
+        e.preventDefault();
+        handleJump();
+    }
 }, { passive: false });
-window.addEventListener("keydown", (e) => e.code === "Space" && handleJump());
 
 function animate() {
     if (isGameOver) return;
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 바닥
-    ctx.fillStyle = "#d4ac0d";
-    const groundY = canvas.height - 50;
-    ctx.fillRect(0, groundY, canvas.width, 50);
+    ctx.fillStyle = "#d4ac0d"; // 바닥
+    ctx.fillRect(0, 340, canvas.width, 60);
 
-    // 중력 및 이동
     player.dy += player.gravity;
     player.y += player.dy;
-    if (player.y >= groundY - player.height) { player.y = groundY - player.height; player.dy = 0; player.isJumping = false; }
+    
+    // 바닥 충돌 판정 보정
+    if (player.y >= 290) { 
+        player.y = 290; 
+        player.dy = 0; 
+        player.isJumping = false; 
+    }
 
     ctx.font = "50px serif";
-    ctx.fillText("🐱", player.x, player.y + 45);
+    ctx.fillText(isInvincible ? "✨🐱" : "🐱", player.x, player.y + 45);
 
     spawnTimer++;
     if (spawnTimer > 100 / (gameSpeed/5)) {
-        obstacles.push({ x: canvas.width, y: groundY - 40, width: 40, height: 40 });
+        obstacles.push({ x: canvas.width, y: 300, width: 40, height: 40 });
         spawnTimer = 0;
     }
 
     obstacles.forEach((obs, i) => {
         obs.x -= gameSpeed;
-        ctx.fillText("🌵", obs.x, obs.y + 35);
+        ctx.fillText("🌵", obs.x, obs.y + 40);
 
-        if (player.x < obs.x + 30 && player.x + 30 > obs.x && player.y < obs.y + 35 && player.y + 35 > obs.y) {
+        if (!isInvincible && player.x < obs.x + 30 && player.x + 30 > obs.x && player.y < obs.y + 40 && player.y + 40 > obs.y) {
             obstacles.splice(i, 1);
-            // 방어구 데미지 계산
             if (armorType === "legend" && legendCount > 0) { legendCount--; }
             else {
                 let damage = 1.0;
@@ -126,9 +134,12 @@ function animate() {
                 lives -= damage;
             }
             updateUI();
+            
             if (lives <= 0) {
                 isGameOver = true;
-                if (score > bestScore) { bestScore = score; localStorage.setItem("bestScoreCat", bestScore); }
+                clearAllEffects(); // [추가] 목숨 사라지면 모든 효과 즉시 종료
+                if (score > bestScore) { bestScore = score; }
+                saveAllData();
                 alert("게임 오버!");
             }
         }
@@ -137,19 +148,18 @@ function animate() {
             obstacles.splice(i, 1);
             if (!isScoreStopped) score += scoreMultiplier;
             coins += (1 * coinMultiplier);
-            gameSpeed += 0.03;
+            gameSpeed += 0.05;
             updateUI();
         }
     });
 }
 
 function resetGame() {
+    clearAllEffects(); // 새 게임 시작 시 효과 초기화
     score = 0; lives = 3; gameSpeed = 5; obstacles = []; isGameOver = false;
-    updateUI(); animate();
+    updateUI();
+    animate();
 }
-
-document.getElementById("shop-btn").onclick = () => document.getElementById("shop-modal").classList.remove("hidden");
-document.getElementById("close-shop").onclick = () => document.getElementById("shop-modal").classList.add("hidden");
 
 updateUI();
 animate();
