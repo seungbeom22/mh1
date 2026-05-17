@@ -1,35 +1,45 @@
+body {
+    text-align: center;
+    background-color: #f4d03f;
+    margin: 0; padding: 0;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#ui-container {
+    position: absolute; top: 0; left: 0; width: 100%;
+    display: flex; justify-content: space-between;
+    padding: 10px; box-sizing: border-box; z-index: 20;
+    pointer-events: none;
+}
+
+#left-ui, #right-ui, #center-ui { pointer-events: auto; font-weight: bold; text-shadow: 1px 1px white; }
+
 #gameContainer { 
-    width: 100vw; 
-    height: 60vh; /* 화면의 60%만 사용 (위로 배치) */
-    background-color: #ffeaa7;
-    display: flex; 
-    align-items: flex-end; 
-    margin-top: 5vh; /* 적당히 위로 띄움 */
-}
-
-canvas { 
     width: 100%; 
-    height: auto; 
-    display: block; 
+    height: 50vh; /* 화면의 절반만 게임 화면으로 사용 */
+    background-color: #ffeaa7;
+    display: flex; align-items: flex-end;
+    border-bottom: 4px solid #d4ac0d;
 }
 
-/* 터치 안내 영역 (아래쪽 빈 공간) */
-body::after {
-    content: "이 영역을 터치해서 점프하세요";
-    position: fixed;
-    bottom: 5vh;
-    width: 100%;
-    color: #d4ac0d;
-    font-weight: bold;
-    opacity: 0.6;
+canvas { width: 100%; height: auto; display: block; }
+
+/* 하단 터치 영역 안내 */
+#touch-area {
+    flex: 1; /* 나머지 하단 절반 전체 */
+    display: flex; align-items: center; justify-content: center;
+    background-color: #f4d03f;
+    color: #d4ac0d; font-weight: bold; font-size: 1.2rem;
 }
 
-#back-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #95a5a6;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+#shop-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 100;
+    display: flex; justify-content: center; align-items: center;
 }
+.shop-content { background: white; padding: 20px; border-radius: 15px; width: 80%; max-width: 400px; }
+.hidden { display: none !important; }
