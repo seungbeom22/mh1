@@ -2,13 +2,16 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>무한 러너 게임</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>무한 러너 게임</h1>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
-    <p>스페이스바를 눌러 점프하세요! (게임오버 후 다시 시작도 스페이스바)</p>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    <p>스페이스바 또는 화면 터치로 점프하세요!</p>
     <script src="game.js"></script>
 </body>
 </html>
