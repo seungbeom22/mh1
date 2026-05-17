@@ -3,15 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>무한 러너 게임</title>
+    <title>사막 고양이 러너</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>무한 러너 게임</h1>
+    <div id="ui-layer">
+        <div id="stats">
+            <span id="heart-display">❤️❤️❤️</span> | 
+            <span id="coin-display">🪙 0</span>
+        </div>
+        <button id="shop-btn">🛒 상점</button>
+    </div>
+
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
     </div>
-    <p>스페이스바 또는 화면 터치로 점프하세요!</p>
+
+    <div id="shop-modal" class="hidden">
+        <h2>🌵 사막 상점</h2>
+        <div class="shop-item">
+            <span>🛡️ 무적 포션 (3초)</span>
+            <button onclick="buyItem('shield', 130)">130🪙</button>
+        </div>
+        <div class="shop-item">
+            <span>❤️ 추가 목숨 (+1)</span>
+            <button onclick="buyItem('life', 200)">200🪙</button>
+        </div>
+        <div class="shop-item">
+            <span>⏰ 슬로우 (10초)</span>
+            <button onclick="buyItem('slow', 315)">315🪙</button>
+        </div>
+        <button id="close-shop">닫기</button>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>
