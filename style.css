@@ -2,10 +2,24 @@ body {
     text-align: center;
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 모바일 스크롤 방지 */
 }
+
+#gameContainer {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
 canvas {
     background-color: #ffffff;
     border: 2px solid #333;
     display: block;
-    margin: 20px auto;
+    width: 100%; /* 부모 너비에 맞춤 */
+    height: auto; /* 비율 유지 */
+    touch-action: none; /* 브라우저 기본 터치 동작 방지 */
 }
