@@ -12,14 +12,13 @@
             <span id="best-display">Best: 0</span><br>
             <span id="score-display">Score: 0</span>
         </div>
-        
         <div id="center-ui">
             <button id="shop-btn">🛒</button>
-        </div>
-
+            <div id="msg-box"></div> </div>
         <div id="right-ui">
             <div id="heart-display">❤️❤️❤️</div>
             <div id="coin-display">🪙 0</div>
+            <div id="armor-status" style="font-size: 12px; color: blue;">🛡️ 기본</div>
         </div>
     </div>
 
@@ -30,23 +29,18 @@
     <div id="shop-modal" class="hidden">
         <div class="shop-content">
             <h2>🌵 사막 상점</h2>
-            <p>구매 즉시 효과가 적용됩니다!</p>
-            <div class="shop-item">
-                <span>🛡️ 무적 (3초)</span>
-                <button onclick="buyItem('shield', 130)">130🪙</button>
-            </div>
-            <div class="shop-item">
-                <span>❤️ 목숨 +1</span>
-                <button onclick="buyItem('life', 200)">200🪙</button>
-            </div>
-            <div class="shop-item">
-                <span>⏰ 슬로우 (10초)</span>
-                <button onclick="buyItem('slow', 315)">315🪙</button>
+            <div class="shop-list">
+                <div class="shop-item"><span>🧪 도박 포션</span><button onclick="buyItem('gamble', 100)">100🪙</button></div>
+                <div class="shop-item"><span>🛡️ 레어 방어구 (피해 0.5)</span><button onclick="buyItem('rare', 275)">275🪙</button></div>
+                <div class="shop-item"><span>💎 에픽 방어구 (피해 0.3)</span><button onclick="buyItem('epic', 320)">320🪙</button></div>
+                <div class="shop-item"><span>👑 전설 방어구 (8번 무효)</span><button onclick="buyItem('legend', 600)">600🪙</button></div>
+                <hr>
+                <div class="shop-item"><span>✨ 무적 포션 (3초)</span><button onclick="buyItem('shield', 130)">130🪙</button></div>
+                <div class="shop-item"><span>❤️ 목숨 +1</span><button onclick="buyItem('life', 200)">200🪙</button></div>
             </div>
             <button id="close-shop">나가기</button>
         </div>
     </div>
-
     <script src="game.js"></script>
 </body>
 </html>
