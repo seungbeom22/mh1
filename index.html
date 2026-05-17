@@ -1,21 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>사막 고양이 러너</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
     <div id="ui-container">
-        <div id="left-ui"><span id="best-display"></span><br><span id="score-display"></span></div>
-        <div id="center-ui"><button id="shop-btn">🛒</button></div>
+        <div id="left-ui">
+            <span id="best-display">Best: 0</span><br>
+            <span id="score-display">Score: 0</span>
+        </div>
+        <div id="center-ui">
+            <button id="shop-btn">🛒</button>
+        </div>
         <div id="right-ui">
-            <div id="heart-display"></div>
-            <div id="coin-display"></div>
-            <div id="armor-status" style="font-size:12px; color:blue;"></div>
+            <div id="heart-display">❤️❤️❤️</div>
+            <div id="coin-display">🪙 0</div>
+            <div id="armor-status">🛡️ 기본</div>
         </div>
     </div>
 
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
     </div>
-    
-    <div id="touch-area">이곳을 터치하여 점프</div>
+
+    <div id="touch-area">이 영역을 터치해서 점프하세요</div>
 
     <div id="shop-modal" class="hidden">
-        <button onclick="document.getElementById('shop-modal').classList.add('hidden')">⬅️ 뒤로 가기</button>
+        <div class="shop-content">
+            <h2>🌵 사막 상점</h2>
+            <div class="shop-list">
+                <div class="shop-item"><span>🧪 도박 포션</span><button onclick="buyItem('gamble', 100)">100🪙</button></div>
+                <div class="shop-item"><span>🛡️ 레어 방어구</span><button onclick="buyItem('rare', 275)">275🪙</button></div>
+                <div class="shop-item"><span>💎 에픽 방어구</span><button onclick="buyItem('epic', 320)">320🪙</button></div>
+                <div class="shop-item"><span>👑 전설 방어구</span><button onclick="buyItem('legend', 600)">600🪙</button></div>
+                <hr>
+                <div class="shop-item"><span>❤️ 목숨 +1</span><button onclick="buyItem('life', 200)">200🪙</button></div>
+            </div>
+            <button id="close-shop">⬅️ 뒤로 가기</button>
+        </div>
     </div>
+
+    <script src="game.js"></script>
 </body>
+</html>
