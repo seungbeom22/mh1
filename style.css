@@ -7,41 +7,33 @@ body {
 }
 
 #ui-container {
-    position: absolute;
-    top: 0; left: 0; width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 15px 20px;
-    box-sizing: border-box;
-    z-index: 10;
-    pointer-events: none; /* UI 배경은 클릭 통과 */
+    position: absolute; top: 0; left: 0; width: 100%;
+    display: flex; justify-content: space-between;
+    padding: 15px; box-sizing: border-box; z-index: 10;
+    pointer-events: none;
 }
 
-#left-ui, #right-ui, #center-ui {
-    pointer-events: auto; /* 버튼과 텍스트는 클릭 가능 */
-    color: #333;
-    font-weight: bold;
-    text-shadow: 1px 1px 0px white;
+#left-ui, #right-ui, #center-ui { pointer-events: auto; font-weight: bold; }
+#msg-box { font-size: 14px; color: #e67e22; margin-top: 5px; height: 20px; }
+
+#gameContainer { 
+    width: 100vw; height: 100vh; 
+    background-color: #ffeaa7;
+    display: flex; align-items: center; 
 }
 
-#left-ui { text-align: left; font-size: 18px; }
-#right-ui { text-align: right; font-size: 22px; }
-#shop-btn { font-size: 35px; background: none; border: none; cursor: pointer; }
-
-#gameContainer { width: 100vw; height: 100vh; display: flex; align-items: center; }
-canvas { background-color: #ffeaa7; width: 100%; height: auto; display: block; }
+canvas { width: 100%; height: 100%; display: block; touch-action: none; }
 
 #shop-modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: 100;
+    background: rgba(0,0,0,0.7); z-index: 100;
     display: flex; justify-content: center; align-items: center;
 }
 
 .shop-content {
-    background: white; padding: 30px; border-radius: 20px; border: 5px solid #d4ac0d;
+    background: white; padding: 20px; border-radius: 15px; max-height: 80vh; overflow-y: auto;
 }
 
+.shop-item { margin: 10px 0; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.shop-item button { padding: 5px 10px; background: #2ecc71; border: none; color: white; border-radius: 5px; }
 .hidden { display: none !important; }
-.shop-item { margin: 15px 0; display: flex; justify-content: space-between; align-items: center; gap: 30px; }
-.shop-item button { padding: 5px 15px; background: #2ecc71; border: none; border-radius: 5px; color: white; cursor: pointer; }
